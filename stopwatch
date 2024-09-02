@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Application</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e6e6fa; 
+        }
+
+        .stopwatch-container {
+            text-align: center;
+            background: #ffffff; 
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 320px;
+        }
+
+        #display {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            color: #6a0dad; 
+        }
+
+        .button-container {
+            margin-bottom: 20px;
+        }
+
+        .button-container button {
+            font-size: 1em;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .button-container button.start {
+            background-color: #8a2be2; 
+            color: white;
+        }
+
+        .button-container button.pause {
+            background-color: #7f00ff; 
+            color: white;
+        }
+
+        .button-container button.reset {
+            background-color: #5e2a8a; 
+            color: white;
+        }
+
+        .button-container button:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        #laps {
+            list-style: none;
+            padding: 0;
+        }
+
+        #laps li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dcdcdc; 
+            color: #6a0dad; 
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch-container">
+        <div id="display">00:00:00</div>
+        <div class="button-container">
+            <button class="start" onclick="startStopwatch()">Start</button>
+            <button class="pause" onclick="pauseStopwatch()">Pause</button>
+            <button class="reset" onclick="resetStopwatch()">Reset</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+
+    <script>
+        let startTime, updatedTime, difference, tInterval, running = false;
+        let lapCounter = 1;
+
+        function startStopwatch() {
+            if (!running) {
+                startTime = new Date().getTime();
+                tInterval = setInterval(getShowTime, 1);
+                running = true;
+            }
+        }
+
+        function pauseStopwatch() {
+            if (running) {
+                clearInterval(tInterval);
+                running = false;
+            }
+        }
+
+        function resetStopwatch() {
+            clearInterval(tInterval);
+            document.getElementById('display').innerText = "00:00:00";
+            document.getElementById('laps').innerHTML = '';
+            lapCounter = 1;
+            running = false;
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+            document.getElementById('display').innerText = hours + ":" + minutes + ":" + seconds;
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'l') {
+                addLap();
+            }
+        });
+
+        function addLap() {
+            if (running) {
+                let lapTime = document.getElementById('display').innerText;
+                let lapList = document.getElementById('laps');
+                let lapItem = document.createElement('li');
+                lapItem.textContent = 'Lap ' + lapCounter + ': ' + lapTime;
+                lapList.appendChild(lapItem);
+                lapCounter++;
+            }
+        }
+    </script>
+</body>
+</html>
